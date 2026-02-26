@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './App.css';
 
 interface Task {
   id: number;
@@ -31,6 +32,12 @@ function App() {
     setInput('');
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      addTask();
+    }
+  };
+
   const toggleTask = (id: number) => {
     setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
   };
@@ -40,45 +47,46 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto', fontFamily: 'sans-serif' }}>
-      <h1>PWA Task Manager</h1>
-      <p style={{ fontSize: '0.8rem', color: '#666' }}>Materia: Desarrollo Web Profesional (UTT)</p>
+    <div className="app-container">
+      <header className="app-header">
+        <h1 className="app-title">✨ Task Manager PWA</h1>
+        <p className="app-subtitle">Desarrollo Web Profesional - UTT</p>
+      </header>
       
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+      <div className="input-section">
         <input 
+          className="task-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Nueva tarea..."
-          style={{ flex: 1, padding: '8px' }}
+          onKeyPress={handleKeyPress}
+          placeholder="Escribe una nueva tarea..."
         />
-        <button onClick={addTask} style={{ padding: '8px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px' }}>
+        <button className="btn btn-primary" onClick={addTask}>
+          <span>➕</span>
           Añadir
         </button>
       </div>
 
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {tasks.map(task => (
-          <li key={task.id} style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            padding: '10px', 
-            borderBottom: '1px solid #eee',
-            background: task.completed ? '#f0f0f0' : 'transparent'
-          }}>
-            <span 
-              onClick={() => toggleTask(task.id)} 
-              style={{ cursor: 'pointer', textDecoration: task.completed ? 'line-through' : 'none' }}
-            >
-              {task.text}
-            </span>
-            <button onClick={() => deleteTask(task.id)} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
-      
-      {tasks.length === 0 && <p>No hay tareas pendientes.</p>}
+      {tasks.length > 0 ? (
+        <ul className="tasks-list">
+          {tasks.map(task => (
+            <li key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+              <div className="task-content" onClick={() => toggleTask(task.id)}>
+                <div className="task-checkbox"></div>
+                <span className="task-text">{task.text}</span>
+              </div>
+              <button className="btn btn-danger" onClick={() => deleteTask(task.id)}>
+                🗑️
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="empty-state">
+          <div className="empty-icon">📝</div>
+          <p className="empty-text">No hay tareas pendientes</p>
+        </div>
+      )}
     </div>
   )
 }
